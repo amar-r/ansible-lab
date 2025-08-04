@@ -1,0 +1,31 @@
+---
+
+- name: Ensure Homebrew is installed
+  shell: |
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  args:
+    creates: /usr/local/bin/brew
+  become: false
+  tags: [brew]
+
+- name: Add Homebrew to PATH in ~/.zprofile
+  lineinfile:
+    path: ~/.zprofile
+    line: 'eval "$(/usr/local/bin/brew shellenv)"'
+    create: yes
+  when: ansible_facts['os_family'] == 'Darwin'
+  tags: [brew]
+
+- name: Load Homebrew environment in current shell
+  shell: eval "$(/usr/local/bin/brew shellenv)"
+  args:
+    executable: /bin/bash
+  when: ansible_facts['os_family'] == 'Darwin'
+  tags: [brew]
+
+- name: Install CLI tools using Homebrew
+  homebrew:
+    name: "{{ brew_cli_tools }}"
+    state: present
+  # when: brew_cli_tools is defined
+  tags: [cli]

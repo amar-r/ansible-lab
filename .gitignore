@@ -1,0 +1,6 @@
+# Ignore environment and secret files
+.env
+*.vault.yml
+*.retry
+*.log
+__pycache__/

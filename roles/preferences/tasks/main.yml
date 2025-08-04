@@ -1,0 +1,29 @@
+---
+- name: Enable tap to click on trackpad
+  shell: defaults write com.apple.AppleMultitouchTrackpad Clicking -bool true
+  changed_when: false
+  tags: [trackpad, preferences]
+
+- name: Set fast key repeat rate
+  shell: |
+    defaults write NSGlobalDomain KeyRepeat -int 1
+    defaults write NSGlobalDomain InitialKeyRepeat -int 10
+  changed_when: false
+  tags: [keyboard, preferences]
+
+- name: Auto-hide the Dock
+  shell: defaults write com.apple.dock autohide -bool false
+  changed_when: false
+  tags: [dock, preferences]
+
+- name: Set Finder to list view by default
+  shell: defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
+  changed_when: false
+  tags: [finder, preferences]
+
+- name: Restart Dock and Finder to apply changes
+  shell: |
+    killall Dock || true
+    killall Finder || true
+  changed_when: false
+  tags: [dock, finder, preferences]

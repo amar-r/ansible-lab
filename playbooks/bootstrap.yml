@@ -1,0 +1,10 @@
+---
+- name: Bootstrap macOS system with base role
+  hosts: macos
+  gather_facts: true
+  become: false
+  roles:
+    - role: base
+    - role: preferences
+    - role: security
+      become: yes

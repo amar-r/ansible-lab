@@ -1,0 +1,6 @@
+---
+brew_cli_tools:
+  - htop
+  - jq
+  - bat
+  - wget

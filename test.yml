@@ -1,0 +1,7 @@
+# test.yml
+- hosts: macos
+  gather_facts: false
+  tasks:
+    - name: Whoami with sudo
+      become: true
+      command: whoami

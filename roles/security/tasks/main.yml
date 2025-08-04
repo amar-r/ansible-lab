@@ -1,0 +1,35 @@
+---
+- name: Disable guest login\
+  become: true
+  become_method: sudo
+  shell: sudo /usr/bin/defaults write /Library/Preferences/com.apple.loginwindow GuestEnabled -bool false
+  changed_when: false
+  tags: [security, login]
+
+- name: Enable firewall
+  shell: sudo /usr/bin/defaults write /Library/Preferences/com.apple.alf globalstate -int 1
+  changed_when: false
+  tags: [security, firewall]
+
+- name: Enable stealth mode (ignore pings)
+  shell: sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
+  changed_when: false
+  tags: [security, firewall]
+
+- name: Require password immediately after sleep/screen saver
+  shell: |
+    defaults write com.apple.screensaver askForPassword -int 1
+    defaults write com.apple.screensaver askForPasswordDelay -int 0
+  changed_when: false
+  tags: [security, screensaver]
+
+- name: Disable AirDrop
+  shell: defaults write com.apple.NetworkBrowser DisableAirDrop -bool true
+  changed_when: false
+  tags: [security, sharing]
+
+- name: Restart affected services
+  shell: |
+    killall SystemUIServer || true
+  changed_when: false
+  tags: [security]
