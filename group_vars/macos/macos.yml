@@ -4,3 +4,6 @@ brew_cli_tools:
   - jq
   - bat
   - wget
+
+ansible_become: true
+ansible_become_method: sudo

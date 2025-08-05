@@ -312,3 +312,44 @@ roles:
 
 See [roles/security/tasks/main.yml](roles/security/tasks/main.yml)
 
+## Phase 5: Secure secrets and enable pull-based self-management
+
+### 5.1
+
+Create or edit your vault file:
+
+```bash
+ansible-vault edit group_vars/macos/vault.yml
+```
+
+Add:
+
+```bash
+ansible_become_password: "yourpassword"
+```
+
+Ensure group_vars/macos/macos.yml includes:
+
+```yaml
+ansible_become: true
+ansible_become_method: sudo
+```
+
+Run with vault
+
+> Currently not getting this step done
+
+```bash
+ansible-playbook -i inventory/hosts.yml playbooks/bootstrap.yml --ask-vault-pass
+```
+
+### 5.2 Enable pull based automation with `ansible-pull`
+
+```bash
+  ansible-pull \
+    -U git@github.com:amar-r/ansible-lab.git \
+    -i inventory/hosts.yml \
+    -d ~/ansible-pull \
+    -v \
+    playbooks/bootstrap.yml
+```
