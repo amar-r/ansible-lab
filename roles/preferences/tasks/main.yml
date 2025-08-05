@@ -4,10 +4,10 @@
   changed_when: false
   tags: [trackpad, preferences]
 
-- name: Set fast key repeat rate
+- name: Remove custom key repeat settings (restore system default)
   shell: |
-    defaults write NSGlobalDomain KeyRepeat -int 5
-    defaults write NSGlobalDomain InitialKeyRepeat -int 10
+    defaults delete NSGlobalDomain KeyRepeat || true
+    defaults delete NSGlobalDomain InitialKeyRepeat || true
   changed_when: false
   tags: [keyboard, preferences]
 

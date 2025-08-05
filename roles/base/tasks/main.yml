@@ -26,6 +26,7 @@
 - name: Install CLI tools using Homebrew
   homebrew:
     name: "{{ brew_cli_tools }}"
+    # name:
+    #   - ansible
     state: present
-  # when: brew_cli_tools is defined
   tags: [cli]
