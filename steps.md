@@ -340,7 +340,7 @@ Run with vault
 > Currently not getting this step done
 
 ```bash
-ansible-playbook -i inventory/hosts.yml playbooks/bootstrap.yml --ask-vault-pass
+ansible-playbook -i inventory/hosts.yml playbooks/bootstrap.yml --extra-vars "@group_vars/macos/vault.yml" --ask-vault-pass
 ```
 
 ### 5.2 Enable pull based automation with `ansible-pull`
@@ -353,3 +353,17 @@ ansible-playbook -i inventory/hosts.yml playbooks/bootstrap.yml --ask-vault-pass
     -v \
     playbooks/bootstrap.yml
 ```
+> Pausing ansible-pull for now
+
+## Phase 6: Deploy and Integrate AWX with Docker Compose
+
+### 6.1 Install Prerequisites on Control Node (Ubuntu)
+
+Ensure the following are installed:
+
+* docker.io
+* docker compose
+* git
+* python3-pip
+
+### Clone AWX Docker Repo
