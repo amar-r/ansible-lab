@@ -337,8 +337,6 @@ ansible_become_method: sudo
 
 Run with vault
 
-> Currently not getting this step done
-
 ```bash
 ansible-playbook -i inventory/hosts.yml playbooks/bootstrap.yml --extra-vars "@group_vars/macos/vault.yml" --ask-vault-pass
 ```
