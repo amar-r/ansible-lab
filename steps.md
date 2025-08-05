@@ -351,7 +351,7 @@ ansible-playbook -i inventory/hosts.yml playbooks/bootstrap.yml --extra-vars "@g
     -v \
     playbooks/bootstrap.yml
 ```
-> Pausing ansible-pull for now
+> **Note:** Pausing ansible-pull for now
 
 ## Phase 6: Deploy and Integrate AWX with Docker Compose
 
