@@ -8,3 +8,5 @@
     - role: preferences
     - role: security
       become: yes
+    - role: updates
+      become: yes
