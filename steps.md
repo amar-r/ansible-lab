@@ -7,9 +7,8 @@
 | 3 | Write modular playbooks using best practices. Use roles, tags, and group variables. Start with a `base` role (e.g., Homebrew + CLI tools). Maintain `bootstrap.yml` as the main entry point. |
 | 4 | Automate realistic tasks for macOS. Install and configure software, set system preferences using `defaults`, apply security hardening, and simulate enterprise-style compliance tasks. |
 | 5 | Secure secrets and enable pull-based self-management. Use `ansible-vault` or `.env` for secrets. Set up `ansible-pull` to allow the Mac to self-apply changes via scheduled jobs using `launchd`. |
-| 6 | Deploy and integrate AWX for web-based automation control. Use Docker Compose to stand up AWX. Sync your Git repo, import inventory, create credentials, and run `bootstrap.yml` as a job template. |
-| 7 | (Optional) Schedule runs and add observability. Use `launchd` on macOS and `cron` or AWX schedules to auto-run playbooks. Add logging or reporting for auditing changes. |
-| 8 | (Optional) Expand to other systems. Add your second Mac or other Linux hosts. Use groups, `host_vars`, and separate roles for shared vs per-host automation logic. |
+| 6 | Schedule runs and add observability. Use `launchd` on macOS and `cron` or AWX schedules to auto-run playbooks. Add logging or reporting for auditing changes. |
+| 7 | Expand to other systems. Add your second Mac or other Linux hosts. Use groups, `host_vars`, and separate roles for shared vs per-host automation logic. |
 
 ## Phase 1: Set up control node and secure SSH access to macOS
 
@@ -353,23 +352,106 @@ ansible-playbook -i inventory/hosts.yml playbooks/bootstrap.yml --extra-vars "@g
 
 ```bash
   ansible-pull \
-    -U git@github.com:amar-r/ansible-lab.git \
-    -i inventory/hosts.yml \
-    -d ~/ansible-pull \
-    -v \
-    playbooks/bootstrap.yml
+  -U git@github.com:amar-r/ansible-lab.git \
+  -i inventory/hosts.yml \
+  -d ~/ansible-pull \
+  --vault-password-file ~/ansible-pull/.vault_pass.txt \
+  playbooks/bootstrap.yml \
+  --limit macbookPro
 ```
 > **Note:** Pausing ansible-pull for now
 
-## Phase 6: Deploy and Integrate AWX with Docker Compose
+## Phase 6: Schedule runs and add observability.
 
-### 6.1 Install Prerequisites on Control Node (Ubuntu)
+### 6.1 Save Your Working Command to a Script
 
-Ensure the following are installed:
+Save this to ~/ansible-pull/run.sh:
 
-* docker.io
-* docker compose
-* git
-* python3-pip
+```bash
+#!/bin/bash
+/usr/local/bin/ansible-pull \
+  -U git@github.com:amar-r/ansible-lab.git \
+  -i inventory/hosts.yml \
+  -d ~/ansible-pull \
+  --vault-password-file ~/ansible-pull/.vault_pass.txt \
+  playbooks/bootstrap.yml \
+  --limit macbookPro
+```
 
-### Clone AWX Docker Repo
+Then make it executable:
+
+```bash
+chmod +x ~/ansible-pull/run.sh
+```
+
+### 6.2 Create the `launchd` Job File
+
+Create the following plist file:
+
+```bash
+mkdir -p ~/Library/LaunchAgents
+nano ~/Library/LaunchAgents/com.ansible.pull.plist
+```
+
+Add the following:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.ansible.pull</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>/Users/amar/ansible-pull/run.sh</string>
+  </array>
+
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>3</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+
+  <key>StandardOutPath</key>
+  <string>/Users/amar/ansible-pull/ansible-pull.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/amar/ansible-pull/ansible-pull.err</string>
+
+  <key>RunAtLoad</key>
+  <true/>
+</dict>
+</plist>
+```
+
+### 6.3 Load the job
+
+```bash
+launchctl load ~/Library/LaunchAgents/com.ansible.pull.plist
+```
+
+Validate
+
+```bash
+launchctl list | grep com.ansible.pull
+```
+
+### 6.4 Testing
+
+Manually trigger the job:
+
+```bash
+launchctl start com.ansible.pull
+```
+
+Check logs
+
+```bash
+cat ~/ansible-pull/ansible-pull.log
+cat ~/ansible-pull/ansible-pull.err
+```
