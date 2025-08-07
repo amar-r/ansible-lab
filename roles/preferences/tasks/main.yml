@@ -4,18 +4,6 @@
   changed_when: false
   tags: [trackpad, preferences]
 
-- name: Remove custom key repeat settings (restore system default)
-  shell: |
-    defaults delete NSGlobalDomain KeyRepeat || true
-    defaults delete NSGlobalDomain InitialKeyRepeat || true
-  changed_when: false
-  tags: [keyboard, preferences]
-
-- name: Auto-hide the Dock
-  shell: defaults write com.apple.dock autohide -bool false
-  changed_when: false
-  tags: [dock, preferences]
-
 - name: Set Finder to list view by default
   shell: defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
   changed_when: false
