@@ -335,10 +335,18 @@ ansible_become: true
 ansible_become_method: sudo
 ```
 
+Add your vault pass to a txt file
+> Make sure to add this file to .gitignore
+
+Update Ainsible config file to include env var for vault pass file
+```bash
+vault_password_file = ./.vault_pass.txt
+```
+
 Run with vault
 
 ```bash
-ansible-playbook -i inventory/hosts.yml playbooks/bootstrap.yml --extra-vars "@group_vars/macos/vault.yml" --ask-vault-pass
+ansible-playbook -i inventory/hosts.yml playbooks/bootstrap.yml --extra-vars "@group_vars/macos/vault.yml"
 ```
 
 ### 5.2 Enable pull based automation with `ansible-pull`

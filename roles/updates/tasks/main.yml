@@ -1,2 +1,18 @@
 ---
-# tasks file for roles/updates
+- name: Check for available updates
+  command: softwareupdate -l
+  register: update_check
+  changed_when: false
+  tags: [updates]
+
+- name: Apply all recommended updates
+  command: softwareupdate -i -a
+  register: update_apply
+  changed_when: "'No updates available' not in update_apply.stdout"
+  tags: [updates]
+
+- name: Reboot if updates were applied
+  reboot:
+    reboot_timeout: 600
+  when: "'Restart Required' in update_apply.stdout"
+  tags: [updates]
